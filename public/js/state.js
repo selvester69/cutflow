@@ -1,8 +1,23 @@
 export const RATIOS = [
-  { id: 'portrait', css: '9 / 16', chip: '9:16 · Reels', w: 'min(64%,250px)' },
-  { id: 'square', css: '1 / 1', chip: '1:1 · Feed', w: 'min(84%,330px)' },
-  { id: 'landscape', css: '16 / 9', chip: '16:9 · YouTube', w: '90%' },
-  { id: 'classic', css: '4 / 3', chip: '4:3 · Classic', w: '84%' }
+  { id: 'portrait', name: 'Reels / TikTok', css: '9 / 16', chip: '9:16 · Reels', w: 'min(64%,250px)' },
+  { id: 'ig_portrait', name: 'Instagram Post', css: '4 / 5', chip: '4:5 · IG Post', w: 'min(72%,280px)' },
+  { id: 'square', name: 'Square Feed', css: '1 / 1', chip: '1:1 · Square', w: 'min(84%,320px)' },
+  { id: 'landscape', name: 'YouTube / TV', css: '16 / 9', chip: '16:9 · YouTube', w: '92%' },
+  { id: 'cinema', name: 'Ultrawide Cinema', css: '21 / 9', chip: '21:9 · Cinema', w: '96%' },
+  { id: 'classic', name: 'Classic SD', css: '4 / 3', chip: '4:3 · Classic', w: '84%' }
+];
+
+export const DEFAULT_STICKERS_CATALOG = [
+  { id: 's_fire', emoji: '🔥', label: 'Fire' },
+  { id: 's_sparkles', emoji: '✨', label: 'Sparkles' },
+  { id: 's_heart', emoji: '❤️', label: 'Heart' },
+  { id: 's_camera', emoji: '🎬', label: 'Clapper' },
+  { id: 's_star', emoji: '⭐', label: 'Star' },
+  { id: 's_zap', emoji: '⚡', label: 'Zap' },
+  { id: 's_100', emoji: '💯', label: '100' },
+  { id: 's_cool', emoji: '😎', label: 'Cool' },
+  { id: 's_pin', emoji: '📍', label: 'Location' },
+  { id: 's_music', emoji: '🎵', label: 'Music' }
 ];
 
 export const state = {
@@ -13,6 +28,7 @@ export const state = {
   playing: false,
   tool: 'trim',
   selected: 0,
+  selectedStickerId: null,
   pps: 52,
   undo: [],
   redo: [],

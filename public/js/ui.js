@@ -1,6 +1,6 @@
 import { ApiService, onApiLog, clearApiLog } from './api.js';
 import { audioSynth } from './audio.js';
-import { state, RATIOS, total, clipStart, clipAt, snapshot } from './state.js';
+import { state, RATIOS, DEFAULT_STICKERS_CATALOG, total, clipStart, clipAt, snapshot } from './state.js';
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -15,7 +15,7 @@ const fmtTC = (t) => `${p2(t / 60)}:${p2(t % 60)}:${p2((t % 1) * 30)}`;
 const fmtS = (t) => `${t.toFixed(1)}s`;
 const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-let phone, canvas, vtext, f1, f2, wsBg;
+let phone, canvas, canvasBg, vtext, stickersLayer, f1, f2, wsBg;
 let tlScroll, tlInner, clipsEl, rulerEl, audStrip;
 let panel, tabsEl, tabind, tcNow, tcTotal, saveState, saveTxt;
 let toastEl, scrim;
@@ -25,6 +25,9 @@ let suppress = false;
 const ICO = {
   trim: '<path d="M6 3v12a3 3 0 0 0 3 3h9M6 21v-6M18 3v6"/>',
   text: '<path d="M4 6V4h16v2M12 4v16M9 20h6"/>',
+  stickers: '<circle cx="12" cy="12" r="9"/><path d="M9 10h.01M15 10h.01M9 15c1.5 1.5 4.5 1.5 6 0"/>',
+  background: '<rect x="3" y="3" width="18" height="18" rx="3"/><path d="M3 15l5-5 4 4 3-3 6 6"/>',
+  format: '<rect x="4" y="4" width="16" height="16" rx="2"/><path d="M4 9h16M9 4v16"/>',
   filter: '<circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/>',
   audio: '<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>',
   speed: '<path d="M12 20a8 8 0 1 0-8-8"/><path d="M12 12l4-3"/>'
@@ -33,6 +36,9 @@ const ICO = {
 const TOOLS = [
   { id: 'trim', label: 'Trim', icon: ICO.trim },
   { id: 'text', label: 'Text', icon: ICO.text },
+  { id: 'stickers', label: 'Sticker', icon: ICO.stickers },
+  { id: 'background', label: 'BG', icon: ICO.background },
+  { id: 'format', label: 'Ratio', icon: ICO.format },
   { id: 'filter', label: 'Grade', icon: ICO.filter },
   { id: 'audio', label: 'Audio', icon: ICO.audio },
   { id: 'speed', label: 'Speed', icon: ICO.speed }
@@ -41,7 +47,9 @@ const TOOLS = [
 export function initUI() {
   phone = $('#phone');
   canvas = $('#canvas');
+  canvasBg = $('#canvasBg');
   vtext = $('#vtext');
+  stickersLayer = $('#stickersLayer');
   f1 = $('#f1');
   f2 = $('#f2');
   wsBg = $('#wsBg');
@@ -66,6 +74,8 @@ export function initUI() {
 }
 
 function buildTabs() {
+  tabsEl.innerHTML = '<div class="tabind" id="tabind"></div>';
+  tabind = $('#tabind');
   TOOLS.forEach((t) => {
     const b = document.createElement('button');
     b.className = 'tab' + (t.id === state.tool ? ' on' : '');
@@ -82,13 +92,49 @@ export function moveIndicator() {
   tabind.style.transform = `translateX(${el.offsetLeft}px)`;
 }
 
+function ensureProjectDefaults(p) {
+  if (!p) return;
+  if (!p.stickers) p.stickers = [];
+  if (!p.background) {
+    p.background = {
+      mode: 'blur',
+      color: '#0a0a0c',
+      gradient: 'linear-gradient(135deg, #1f1c2c, #928dab)',
+      fit: 'cover',
+      blur: 20
+    };
+  }
+}
+
 export function applyProject() {
-  if (!state.project || !state.project.text) return;
+  if (!state.project) return;
+  ensureProjectDefaults(state.project);
   const p = state.project;
   const r = RATIOS.find((x) => x.id === p.ratio) || RATIOS[0];
   canvas.style.aspectRatio = r.css;
   canvas.style.width = r.w;
   $('#ratioChip').textContent = r.chip;
+
+  const bg = p.background;
+  canvas.classList.toggle('fit-contain', bg.fit === 'contain');
+
+  const { i } = clipAt(state.time);
+  const currentImg = p.clips[i]?.img || '';
+
+  if (bg.mode === 'blur') {
+    canvasBg.style.backgroundImage = `url('${currentImg}')`;
+    canvasBg.style.backgroundColor = 'transparent';
+    canvasBg.style.filter = `blur(${bg.blur || 20}px) brightness(0.85) scale(1.2)`;
+  } else if (bg.mode === 'color') {
+    canvasBg.style.backgroundImage = 'none';
+    canvasBg.style.backgroundColor = bg.color || '#000000';
+    canvasBg.style.filter = 'none';
+  } else if (bg.mode === 'gradient') {
+    canvasBg.style.backgroundImage = bg.gradient || 'linear-gradient(135deg, #ff5a2b, #ffb03a)';
+    canvasBg.style.backgroundColor = 'transparent';
+    canvasBg.style.filter = 'none';
+  }
+
   const fil = (state.presets?.filters?.find((f) => f.id === p.filter) || { css: 'none' }).css;
   $('.frames', canvas).style.filter = fil;
 
@@ -100,6 +146,8 @@ export function applyProject() {
   vtext.style.top = (p.text.y || 50) + '%';
   vtext.style.textTransform = p.text.upper ? 'uppercase' : 'none';
 
+  renderStickersOnCanvas();
+
   $('#transport').classList.toggle('playing', state.playing);
   phone.classList.toggle('playing', state.playing);
 
@@ -108,6 +156,20 @@ export function applyProject() {
   } else {
     audioSynth.stop();
   }
+}
+
+function renderStickersOnCanvas() {
+  if (!stickersLayer || !state.project) return;
+  const stickers = state.project.stickers || [];
+  stickersLayer.innerHTML = stickers
+    .map((s) => {
+      const isSel = s.id === state.selectedStickerId;
+      return `<div class="vsticker${isSel ? ' sel' : ''}" data-stk-id="${s.id}" style="left:${s.x}%;top:${s.y}%;transform:translate(-50%,-50%) scale(${s.scale || 1}) rotate(${s.rotate || 0}deg)">
+        ${s.emoji}
+        <span class="stk-del" data-act="del-stk" data-id="${s.id}">×</span>
+      </div>`;
+    })
+    .join('');
 }
 
 export function renderTimeline() {
@@ -194,12 +256,16 @@ export function syncPreview() {
     active.style.transform = `scale(${(1.03 + lp * 0.09).toFixed(3)}) translate3d(${((lp - 0.5) * -1.4).toFixed(2)}%,${((lp - 0.5) * -1).toFixed(2)}%,0)`;
   }
   if (wsBg) wsBg.style.backgroundImage = `url('${c.img}')`;
+  if (p.background?.mode === 'blur' && canvasBg) {
+    canvasBg.style.backgroundImage = `url('${c.img}')`;
+  }
   const off = (-state.time / (T || 1)) * 14;
   if (wsBg) wsBg.style.transform = `scale(1.14) translate3d(${off}px,0,0)`;
 }
 
 export function renderPanel() {
   if (!state.project || !state.presets) return;
+  ensureProjectDefaults(state.project);
   const p = state.project;
   panel.style.animation = 'none';
   void panel.offsetWidth;
@@ -249,6 +315,81 @@ export function renderPanel() {
       <div class="psub" style="--i:6;margin-top:10px"><span>Entrance</span></div>
       <div class="chips" style="--i:7">
         ${['pop', 'fade', 'none'].map((a) => `<button class="chip${t.anim === a ? ' on' : ''}" data-act="anim" data-v="${a}">${a}</button>`).join('')}
+      </div>`;
+  }
+  if (state.tool === 'stickers') {
+    const activeSticker = p.stickers.find((s) => s.id === state.selectedStickerId);
+    html = `
+      <div class="plabel" style="--i:0">Stickers & Overlays</div>
+      <div class="stk-grid" style="--i:1">
+        ${DEFAULT_STICKERS_CATALOG.map((st) => `<button class="stk-btn" data-act="add-stk" data-emoji="${st.emoji}">${st.emoji}<span>${st.label}</span></button>`).join('')}
+      </div>`;
+    if (activeSticker) {
+      const scalePct = ((activeSticker.scale - 0.5) / 1.5) * 100;
+      const rotPct = ((activeSticker.rotate + 180) / 360) * 100;
+      html += `
+        <div style="--i:2;margin-top:10px"><div class="psub"><span>Size (${activeSticker.emoji})</span><b class="mono">${activeSticker.scale.toFixed(1)}x</b></div>
+          <input type="range" id="stkScaleR" min="0.5" max="2.0" step="0.1" value="${activeSticker.scale}" ${rng(scalePct)}></div>
+        <div style="--i:3"><div class="psub"><span>Rotation</span><b class="mono">${activeSticker.rotate}°</b></div>
+          <input type="range" id="stkRotR" min="-180" max="180" step="5" value="${activeSticker.rotate}" ${rng(rotPct)}></div>
+        <div class="chips" style="--i:4;margin-top:6px">
+          <button class="chip accent" data-act="del-active-stk">Remove ${activeSticker.emoji} sticker</button>
+        </div>`;
+    } else {
+      html += `<div class="stat" style="--i:2;margin-top:10px">
+        <span class="dot"></span><span>Tap any sticker above to add, or select on video canvas to scale/rotate.</span>
+      </div>`;
+    }
+  }
+  if (state.tool === 'background') {
+    const bg = p.background;
+    html = `
+      <div class="plabel" style="--i:0">Video Background</div>
+      <div class="chips" style="--i:1">
+        <button class="chip${bg.mode === 'blur' ? ' on' : ''}" data-act="bg-mode" data-v="blur">Video Blur</button>
+        <button class="chip${bg.mode === 'color' ? ' on' : ''}" data-act="bg-mode" data-v="color">Solid Color</button>
+        <button class="chip${bg.mode === 'gradient' ? ' on' : ''}" data-act="bg-mode" data-v="gradient">Gradient</button>
+      </div>
+      <div class="psub" style="--i:2;margin-top:10px"><span>Frame Fit Mode</span><b>${bg.fit === 'contain' ? 'Fit (Contain)' : 'Fill (Cover)'}</b></div>
+      <div class="chips" style="--i:3">
+        <button class="chip${bg.fit === 'cover' ? ' on' : ''}" data-act="bg-fit" data-v="cover">Cover (Crop)</button>
+        <button class="chip${bg.fit === 'contain' ? ' on' : ''}" data-act="bg-fit" data-v="contain">Contain (Pillarbox)</button>
+      </div>`;
+
+    if (bg.mode === 'blur') {
+      const blurPct = ((bg.blur - 5) / 45) * 100;
+      html += `
+        <div style="--i:4;margin-top:8px"><div class="psub"><span>Blur Intensity</span><b class="mono">${bg.blur}px</b></div>
+          <input type="range" id="bgBlurR" min="5" max="50" step="1" value="${bg.blur}" ${rng(blurPct)}></div>`;
+    } else if (bg.mode === 'color') {
+      const colors = ['#0a0a0c', '#181824', '#ff5a2b', '#102a43', '#1e4620', '#2d1b4e'];
+      html += `
+        <div class="psub" style="--i:4;margin-top:10px"><span>Background Color</span></div>
+        <div class="sw" style="--i:5">
+          ${colors.map((c) => `<button class="swatch${bg.color === c ? ' on' : ''}" data-act="bg-color" data-v="${c}" style="background:${c}"></button>`).join('')}
+        </div>`;
+    } else if (bg.mode === 'gradient') {
+      const grads = [
+        { id: 'linear-gradient(135deg, #1f1c2c, #928dab)', label: 'Twilight' },
+        { id: 'linear-gradient(135deg, #ff5a2b, #ffb03a)', label: 'Sunset' },
+        { id: 'linear-gradient(135deg, #0575e6, #00f260)', label: 'Cyber' },
+        { id: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)', label: 'Neon' }
+      ];
+      html += `
+        <div class="chips" style="--i:4;margin-top:10px">
+          ${grads.map((g) => `<button class="chip${bg.gradient === g.id ? ' on' : ''}" data-act="bg-grad" data-v="${g.id}">${g.label}</button>`).join('')}
+        </div>`;
+    }
+  }
+  if (state.tool === 'format') {
+    html = `
+      <div class="plabel" style="--i:0">Target Aspect Ratio</div>
+      <div class="chips scroll" style="--i:1">
+        ${RATIOS.map((r) => `<button class="chip accent${p.ratio === r.id ? ' on' : ''}" data-act="set-ratio" data-v="${r.id}">${r.name} (${r.css})</button>`).join('')}
+      </div>
+      <div class="stat" style="--i:2;margin-top:10px">
+        <svg class="icon" viewBox="0 0 24 24" style="width:15px;height:15px;color:var(--lime)">${ICO.format}</svg>
+        <span>Optimizes output resolution for TikTok, Instagram, YouTube Shorts, and Cinema.</span>
       </div>`;
   }
   if (state.tool === 'filter') {
@@ -417,6 +558,8 @@ async function startRender() {
     projectId: 'cf_8241',
     clips: state.project.clips,
     text: state.project.text,
+    stickers: state.project.stickers,
+    background: state.project.background,
     filter: state.project.filter,
     ratio: state.project.ratio,
     speed: state.project.speed,
@@ -551,10 +694,10 @@ function bindEvents() {
     vtext.setPointerCapture(e.pointerId);
     vtext.classList.add('sel');
     const r = canvas.getBoundingClientRect();
-    drag = { r, dx: e.clientX - (r.left + (r.width * state.project.text.x) / 100), dy: e.clientY - (r.top + (r.height * state.project.text.y) / 100) };
+    drag = { type: 'text', r, dx: e.clientX - (r.left + (r.width * state.project.text.x) / 100), dy: e.clientY - (r.top + (r.height * state.project.text.y) / 100) };
   });
   vtext.addEventListener('pointermove', (e) => {
-    if (!drag) return;
+    if (!drag || drag.type !== 'text') return;
     const x = clamp(((e.clientX - drag.dx - drag.r.left) / drag.r.width) * 100, 10, 90);
     const y = clamp(((e.clientY - drag.dy - drag.r.top) / drag.r.height) * 100, 8, 92);
     state.project.text.x = x;
@@ -564,9 +707,53 @@ function bindEvents() {
   });
   ['pointerup', 'pointercancel'].forEach((ev) =>
     vtext.addEventListener(ev, () => {
-      if (drag) {
+      if (drag && drag.type === 'text') {
         drag = null;
         vtext.classList.remove('sel');
+        scheduleSave();
+      }
+    })
+  );
+
+  let stkDrag = null;
+  stickersLayer.addEventListener('pointerdown', (e) => {
+    const stkEl = e.target.closest('.vsticker');
+    if (!stkEl) return;
+    const id = stkEl.dataset.stkId;
+    if (e.target.classList.contains('stk-del')) {
+      snapshot();
+      state.project.stickers = state.project.stickers.filter((s) => s.id !== id);
+      if (state.selectedStickerId === id) state.selectedStickerId = null;
+      applyProject();
+      renderPanel();
+      scheduleSave();
+      return;
+    }
+
+    e.preventDefault();
+    stkEl.setPointerCapture(e.pointerId);
+    state.selectedStickerId = id;
+    applyProject();
+    if (state.tool === 'stickers') renderPanel();
+
+    const sticker = state.project.stickers.find((s) => s.id === id);
+    const r = canvas.getBoundingClientRect();
+    stkDrag = { sticker, r, dx: e.clientX - (r.left + (r.width * sticker.x) / 100), dy: e.clientY - (r.top + (r.height * sticker.y) / 100) };
+  });
+
+  stickersLayer.addEventListener('pointermove', (e) => {
+    if (!stkDrag) return;
+    const x = clamp(((e.clientX - stkDrag.dx - stkDrag.r.left) / stkDrag.r.width) * 100, 5, 95);
+    const y = clamp(((e.clientY - stkDrag.dy - stkDrag.r.top) / stkDrag.r.height) * 100, 5, 95);
+    stkDrag.sticker.x = x;
+    stkDrag.sticker.y = y;
+    applyProject();
+  });
+
+  ['pointerup', 'pointercancel'].forEach((ev) =>
+    stickersLayer.addEventListener(ev, () => {
+      if (stkDrag) {
+        stkDrag = null;
         scheduleSave();
       }
     })
@@ -582,6 +769,7 @@ function bindEvents() {
     const i = RATIOS.findIndex((r) => r.id === state.project.ratio);
     state.project.ratio = RATIOS[(i + 1) % RATIOS.length].id;
     applyProject();
+    if (state.tool === 'format') renderPanel();
     scheduleSave();
     toast(RATIOS[(i + 1) % RATIOS.length].chip);
   });
@@ -635,6 +823,27 @@ function bindEvents() {
       applyProject();
       scheduleSave();
     }
+    if (el.id === 'stkScaleR') {
+      const activeSticker = p.stickers.find((s) => s.id === state.selectedStickerId);
+      if (activeSticker) {
+        activeSticker.scale = +el.value;
+        applyProject();
+        scheduleSave();
+      }
+    }
+    if (el.id === 'stkRotR') {
+      const activeSticker = p.stickers.find((s) => s.id === state.selectedStickerId);
+      if (activeSticker) {
+        activeSticker.rotate = +el.value;
+        applyProject();
+        scheduleSave();
+      }
+    }
+    if (el.id === 'bgBlurR') {
+      p.background.blur = +el.value;
+      applyProject();
+      scheduleSave();
+    }
   });
 
   panel.addEventListener('click', (e) => {
@@ -644,6 +853,73 @@ function bindEvents() {
     const act = b.dataset.act;
     const v = b.dataset.v;
 
+    if (act === 'add-stk') {
+      const emoji = b.dataset.emoji;
+      snapshot();
+      const newStk = {
+        id: 'stk_' + Math.random().toString(36).slice(2, 7),
+        emoji,
+        x: 50,
+        y: 50,
+        scale: 1,
+        rotate: 0
+      };
+      if (!p.stickers) p.stickers = [];
+      p.stickers.push(newStk);
+      state.selectedStickerId = newStk.id;
+      applyProject();
+      renderPanel();
+      toast(`Added ${emoji} sticker`);
+      scheduleSave();
+    }
+    if (act === 'del-active-stk') {
+      if (state.selectedStickerId) {
+        snapshot();
+        p.stickers = p.stickers.filter((s) => s.id !== state.selectedStickerId);
+        state.selectedStickerId = null;
+        applyProject();
+        renderPanel();
+        toast('Sticker removed');
+        scheduleSave();
+      }
+    }
+    if (act === 'bg-mode') {
+      snapshot();
+      p.background.mode = v;
+      applyProject();
+      renderPanel();
+      scheduleSave();
+    }
+    if (act === 'bg-fit') {
+      snapshot();
+      p.background.fit = v;
+      applyProject();
+      renderPanel();
+      scheduleSave();
+    }
+    if (act === 'bg-color') {
+      snapshot();
+      p.background.color = v;
+      applyProject();
+      renderPanel();
+      scheduleSave();
+    }
+    if (act === 'bg-grad') {
+      snapshot();
+      p.background.gradient = v;
+      applyProject();
+      renderPanel();
+      scheduleSave();
+    }
+    if (act === 'set-ratio') {
+      snapshot();
+      p.ratio = v;
+      applyProject();
+      renderPanel();
+      const r = RATIOS.find((x) => x.id === v);
+      toast(r ? r.chip : 'Aspect ratio changed');
+      scheduleSave();
+    }
     if (act === 'split') {
       const { i, local } = clipAt(state.time);
       const c = p.clips[i];
