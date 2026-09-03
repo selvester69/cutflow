@@ -1,4 +1,4 @@
-# CutFlow — High-Level Design (HLD)
+# CutFlow — High-Level Design (HLD) & Technical Roadmap
 
 ## 1. Executive Summary
 
@@ -157,7 +157,80 @@ The SQLite database (`cutflow.db`) contains two primary tables:
 
 ---
 
-## 9. Verification & Testing
+## 9. Senior Design Review & Improvement Roadmap
 
-- **Backend API Test Suite:** `node tests/api.test.js` tests project persistence, revision tracking, preset fetching, render job creation, polling, and cancellation.
-- **Frontend Verification:** Automated Playwright scripts verify UI elements, canvas interactions, sticker rendering, background controls, and console logging.
+### 9.1 Critical Gaps & Technical Debt
+- **Architecture & Scalability:** Needs worker queue separation (Bull/Redis) for render jobs and horizontal scaling.
+- **State Synchronization:** Needs real-time multiplayer conflict resolution (Yjs CRDT / Operational Transformation).
+- **Security & Validation:** Requires OAuth2/JWT auth layer, Zod endpoint validation, and rate limiting.
+- **DevOps Hygiene:** Requires containerization, CI/CD automation, and structured observability.
+
+### 9.2 Improvement Tiers
+
+#### **Tier-1 (Critical Baseline)**
+| Priority | Item | Impact | Effort |
+|---|---|---|---|
+| **P0** | Authentication & Authorization (OAuth2 / JWT) | Blocks production deployment | Medium |
+| **P0** | Async Render Queue (Bull + Redis) | Unblocks high-throughput rendering | High |
+| **P0** | Database Migrations & Exclude DB from Git | Operational hygiene & data safety | Low |
+| **P0** | Structured Logging (Pino/Winston) + Sentry | Error tracking & observability | Medium |
+| **P1** | Real-time Conflict Resolution (Yjs CRDT) | Multi-user editing | High |
+| **P1** | Redis Caching Layer | 10-100x query latency speedup | Medium |
+| **P1** | Containerization (Docker + docker-compose) | Standardized runtime environment | Low |
+| **P1** | Dedicated Render Worker Service | Decoupled compute scaling | High |
+
+#### **Tier-2 (Recommended Infrastructure & Product Enhancements)**
+- **Testing & Quality:** Vitest unit tests + Playwright E2E automation (70%+ coverage target).
+- **Offline PWA:** Service Worker + IndexedDB draft cache with auto-sync on reconnect.
+- **Database Scaling:** Migrate from SQLite to PostgreSQL with connection pooling (PgBouncer).
+- **Storage & Webhooks:** Cloud object storage (S3/GCS) + signed URLs + Webhook completion triggers.
+
+#### **Tier-3 (Infrastructure & Operations)**
+- **CI/CD:** GitHub Actions workflow (lint $\rightarrow$ test $\rightarrow$ Docker build $\rightarrow$ deploy).
+- **Observability:** Prometheus metrics + Grafana dashboard monitoring.
+- **CDN:** CloudFront delivery for rendered outputs.
+- **Orchestration:** Kubernetes (K8s) deployment manifests with HPA auto-scaling.
+
+### 9.3 6-Month Roadmap
+
+```
++-----------------------------------------------------------------------------+
+| Month 1: Foundation (Auth, Redis, Structured Logging, Docker & CI/CD)       |
++-----------------------------------------------------------------------------+
+                                       |
+                                       v
++-----------------------------------------------------------------------------+
+| Month 2-3: Scalability (Bull Queue, Render Workers, Postgres, S3 Storage)   |
++-----------------------------------------------------------------------------+
+                                       |
+                                       v
++-----------------------------------------------------------------------------+
+| Month 4: Frontend Modernization (PWA Offline Drafts, Vitest, Zustand)       |
++-----------------------------------------------------------------------------+
+                                       |
+                                       v
++-----------------------------------------------------------------------------+
+| Month 5: Real-Time Collaboration (Yjs CRDTs, Socket.io, Field Locks)       |
++-----------------------------------------------------------------------------+
+                                       |
+                                       v
++-----------------------------------------------------------------------------+
+| Month 6: Enterprise Polish & Scale (Multi-format export, K8s, Load Tuning) |
++-----------------------------------------------------------------------------+
+```
+
+### 9.4 Risk Mitigation Matrix
+
+| Risk | Impact | Mitigation Strategy |
+|---|---|---|
+| Data loss during export | High | Persist state snapshot prior to job queueing; transactional queue |
+| Output video codec mismatch | Medium | Decouple preview canvas rendering from export pipeline |
+| Concurrent editing collision | High | Real-time CRDT (Yjs) + server revision conflict resolution |
+| Render job hanging | High | Heartbeat checks + automatic worker timeouts + Dead Letter Queue (DLQ) |
+| Database connection bottleneck | High | PostgreSQL connection pooling via PgBouncer |
+
+### 9.5 Executed Quick Wins (Completed)
+1. **Database & Environment Hygiene:** Added `.gitignore` exclusions for database files and runtime artifacts.
+2. **Structured Logging:** Implemented structured JSON request and error logging middleware in `server.js`.
+3. **Containerization:** Created `Dockerfile`, `docker-compose.yml`, and `.dockerignore`.
+4. **CI Automation:** Created `.github/workflows/ci.yml` for automated testing and Docker builds.

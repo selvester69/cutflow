@@ -13,6 +13,23 @@ const PORT = process.env.PORT || 3000;
 app.use(cors());
 app.use(express.json());
 
+// Structured HTTP Request Logging Middleware
+app.use((req, res, next) => {
+  const start = Date.now();
+  res.on('finish', () => {
+    const duration = Date.now() - start;
+    console.log(JSON.stringify({
+      timestamp: new Date().toISOString(),
+      method: req.method,
+      path: req.path,
+      status: res.statusCode,
+      durationMs: duration,
+      userAgent: req.get('user-agent') || 'unknown'
+    }));
+  });
+  next();
+});
+
 // Serve static assets from public/ and renders/
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/renders', express.static(path.join(__dirname, 'renders')));
@@ -24,7 +41,13 @@ app.use('/v1/renders', renderRoutes);
 
 // Centralized Error Handling Middleware
 app.use((err, req, res, next) => {
-  console.error('API Error:', err);
+  console.error(JSON.stringify({
+    timestamp: new Date().toISOString(),
+    event: 'API_ERROR',
+    status: err.status || 500,
+    message: err.message || 'Internal Server Error',
+    stack: err.stack
+  }));
   const status = err.status || 500;
   res.status(status).json({
     error: {

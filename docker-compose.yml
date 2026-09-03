@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  cutflow-app:
+    build: .
+    container_name: cutflow-app
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    volumes:
+      - cutflow-data:/app/data
+      - cutflow-renders:/app/renders
+    restart: unless-stopped
+
+volumes:
+  cutflow-data:
+  cutflow-renders:
