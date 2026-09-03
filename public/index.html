@@ -9,9 +9,6 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-/* ------------------------------------------------------------------ *
- *  CutFlow — mobile video editor
- * ------------------------------------------------------------------ */
 :root{
   --bg:#0a0a0c;
   --surface:#131318;
@@ -43,7 +40,6 @@ button{border:0;background:none;cursor:pointer}
 .mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-variant-numeric:tabular-nums}
 .icon{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;pointer-events:none}
 
-/* ---------------- stage / ambient ---------------- */
 .stage{position:relative;display:grid;place-items:center;width:100%;height:100dvh;overflow:hidden}
 .glow{position:absolute;border-radius:50%;filter:blur(90px);opacity:.55;pointer-events:none}
 .g1{width:52vw;height:52vw;left:-12vw;top:-14vw;background:radial-gradient(circle,rgba(255,90,43,.5),transparent 68%);animation:drift1 22s ease-in-out infinite alternate}
@@ -55,7 +51,6 @@ button{border:0;background:none;cursor:pointer}
 
 .wrap{position:relative;display:flex;align-items:center;gap:64px;padding:22px}
 
-/* ---------------- desktop pitch ---------------- */
 .pitch{display:none;width:340px;flex-direction:column;gap:22px}
 .brand{display:flex;align-items:center;gap:11px}
 .brand-mark{position:relative;width:38px;height:38px;border-radius:11px;background:linear-gradient(140deg,var(--accent),var(--accent-2));box-shadow:0 10px 26px rgba(255,90,43,.35);overflow:hidden}
@@ -75,7 +70,6 @@ button{border:0;background:none;cursor:pointer}
 .kbd kbd{padding:3px 7px;border:1px solid var(--line);border-bottom-width:2px;border-radius:6px;background:var(--surface);font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--text)}
 @media(min-width:1080px){.pitch{display:flex}}
 
-/* ---------------- phone shell ---------------- */
 .phone{position:relative;display:flex;flex-direction:column;width:min(430px,100vw);height:100dvh;max-height:900px;overflow:hidden;isolation:isolate;background:var(--bg)}
 @media(min-width:640px){
   .phone{border:9px solid #1c1c22;border-radius:48px;box-shadow:0 60px 140px rgba(0,0,0,.8),0 0 0 1px rgba(255,255,255,.05)}
@@ -83,12 +77,10 @@ button{border:0;background:none;cursor:pointer}
 }
 .phone::after{content:"";position:absolute;inset:0;pointer-events:none;z-index:170;border-radius:inherit;box-shadow:inset 0 0 90px rgba(0,0,0,.55)}
 
-/* reveal */
 .rv{opacity:0;transform:translateY(12px)}
 .phone.ready .rv{animation:rise .68s var(--ease) forwards;animation-delay:calc(var(--d,0)*65ms)}
 @keyframes rise{to{opacity:1;transform:none}}
 
-/* ---------------- status bar ---------------- */
 .status{z-index:30;display:flex;flex:0 0 auto;align-items:center;justify-content:space-between;height:30px;padding:8px 20px 2px;font-size:11px;font-weight:700}
 .status-r{display:flex;align-items:center;gap:6px}
 .sig{display:flex;align-items:flex-end;gap:1.5px;height:10px}
@@ -100,7 +92,6 @@ button{border:0;background:none;cursor:pointer}
 .batt::before{content:"";display:block;width:72%;height:100%;border-radius:1px;background:var(--lime)}
 .batt::after{content:"";position:absolute;top:2.5px;right:-3px;width:2px;height:4px;border-radius:0 2px 2px 0;background:rgba(255,255,255,.6)}
 
-/* ---------------- top bar ---------------- */
 .topbar{z-index:30;display:grid;flex:0 0 auto;grid-template-columns:38px 1fr auto;align-items:center;gap:6px;height:58px;padding:4px 12px 10px}
 .rb{display:grid;width:38px;height:38px;place-items:center;border-radius:50%;color:var(--text);transition:transform .2s var(--ease),background .2s}
 .rb:hover{background:rgba(255,255,255,.07)}
@@ -117,7 +108,6 @@ button{border:0;background:none;cursor:pointer}
 .exp::after{content:"";position:absolute;top:0;left:0;width:40%;height:100%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);transform:translateX(-160%) skewX(-18deg);animation:expSweep 3.4s var(--ease-io) infinite}
 @keyframes expSweep{0%,60%{transform:translateX(-160%) skewX(-18deg)}100%{transform:translateX(320%) skewX(-18deg)}}
 
-/* ---------------- workspace / preview ---------------- */
 .workspace{position:relative;display:grid;flex:1 1 auto;min-height:210px;place-items:center;overflow:hidden;background:#050506}
 .ws-bg{position:absolute;inset:-40px;background-position:center;background-size:cover;filter:blur(30px) saturate(.65);opacity:.7;transform:scale(1.14);transition:background-image .3s linear}
 .ws-veil{position:absolute;inset:0;background:linear-gradient(rgba(5,5,8,.42),rgba(5,5,8,.72))}
@@ -147,14 +137,12 @@ button{border:0;background:none;cursor:pointer}
 .cbtn:active{transform:scale(.88)}
 .cbtn.on{color:#12120a;background:var(--lime);border-color:transparent}
 .cbtn .icon{width:16px;height:16px}
-/* film sprockets riding the preview edges while playing */
 .reels{position:absolute;left:0;right:0;height:9px;z-index:6;opacity:0;transition:opacity .3s;pointer-events:none;
   background-image:radial-gradient(circle at 5px 4.5px,rgba(255,255,255,.55) 2.4px,transparent 2.6px);background-size:22px 9px}
 .reels.top{top:0}.reels.bot{bottom:0}
 .playing .reels{opacity:.85;animation:sprocket .5s linear infinite}
 @keyframes sprocket{to{background-position-x:22px}}
 
-/* ---------------- editor ---------------- */
 .editor{z-index:20;flex:0 0 auto;border-top:1px solid var(--line);background:var(--surface);box-shadow:0 -18px 40px rgba(0,0,0,.3)}
 .transport{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;height:52px;padding:0 12px;border-bottom:1px solid var(--line)}
 .tc{font-size:11px;color:var(--muted);letter-spacing:.02em}
@@ -171,7 +159,6 @@ button{border:0;background:none;cursor:pointer}
 .playing .play::before{animation:pulse 1.9s var(--ease-io) infinite}
 @keyframes pulse{0%{opacity:.7;transform:scale(.86)}100%{opacity:0;transform:scale(1.35)}}
 
-/* timeline */
 .tl{position:relative;height:var(--tl-h);border-bottom:1px solid var(--line);background:linear-gradient(180deg,#0e0e12,#131318)}
 .tl-scroll{position:relative;height:100%;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;-webkit-overflow-scrolling:touch}
 .tl-scroll::-webkit-scrollbar{display:none}
@@ -202,7 +189,6 @@ button{border:0;background:none;cursor:pointer}
 .playhead::after{content:"";position:absolute;top:0;left:50%;width:14px;height:100%;transform:translateX(-50%);
   background:linear-gradient(180deg,rgba(255,90,43,.16),transparent 60%);opacity:.9}
 
-/* tabs */
 .tabs{position:relative;display:flex;gap:2px;height:46px;padding:0 8px;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line)}
 .tabs::-webkit-scrollbar{display:none}
 .tab{position:relative;z-index:2;flex:1 0 auto;min-width:64px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:0 6px;color:var(--muted-2);font-size:9px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;transition:color .25s}
@@ -210,7 +196,6 @@ button{border:0;background:none;cursor:pointer}
 .tab.on{color:var(--text)}
 .tabind{position:absolute;z-index:1;top:6px;left:0;height:34px;border-radius:11px;background:var(--surface-3);transition:transform .45s var(--ease),width .45s var(--ease)}
 
-/* panel */
 .panel{position:relative;height:var(--panel-h);overflow:hidden}
 .pbody{position:absolute;inset:0;padding:11px 14px 8px;overflow-y:auto;scrollbar-width:none}
 .pbody::-webkit-scrollbar{display:none}
@@ -221,7 +206,6 @@ button{border:0;background:none;cursor:pointer}
 .psub{display:flex;align-items:center;justify-content:space-between;font-size:10.5px;color:var(--muted);margin-bottom:5px}
 .psub b{color:var(--text);font-weight:650}
 
-/* range */
 input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:22px;background:transparent}
 input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:4px;background:linear-gradient(90deg,var(--accent) var(--p,50%),rgba(255,255,255,.13) var(--p,50%))}
 input[type=range]::-moz-range-track{height:4px;border-radius:4px;background:rgba(255,255,255,.13)}
@@ -230,7 +214,6 @@ input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:15px;heigh
 input[type=range]::-moz-range-thumb{width:12px;height:12px;border-radius:50%;background:#fff;border:3px solid var(--accent)}
 input[type=range]:active::-webkit-slider-thumb{transform:scale(1.22)}
 
-/* chips */
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chips.scroll{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
 .chips.scroll::-webkit-scrollbar{display:none}
@@ -242,7 +225,6 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.22)}
 .chip.ghost{background:transparent}
 .chip .icon{width:14px;height:14px;vertical-align:-2px;margin-right:5px}
 
-/* filter tiles */
 .ftiles{display:flex;gap:9px;overflow-x:auto;scrollbar-width:none;padding:2px 0 4px}
 .ftiles::-webkit-scrollbar{display:none}
 .ftile{position:relative;flex:0 0 auto;width:60px;text-align:center}
@@ -253,7 +235,6 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.22)}
 .ftile span{display:block;margin-top:6px;font-size:8.5px;color:var(--muted);letter-spacing:.02em;white-space:nowrap}
 .ftile.on span{color:var(--text);font-weight:700}
 
-/* audio cards */
 .acard{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:11px;border:1px solid var(--line);background:var(--surface-2);margin-bottom:6px;transition:border-color .25s,background .25s,transform .25s var(--ease)}
 .acard:hover{transform:translateX(3px)}
 .acard.on{border-color:rgba(95,215,210,.55);background:rgba(95,215,210,.09)}
@@ -265,7 +246,6 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.22)}
 .awave i{width:2px;border-radius:2px;background:rgba(95,215,210,.75);transform-origin:bottom}
 .acard.on .awave i{animation:bar .9s ease-in-out infinite alternate;animation-delay:calc(var(--b)*-70ms)}
 
-/* misc */
 .stat{display:flex;gap:8px;align-items:center;padding:8px 10px;border-radius:10px;background:var(--surface-2);border:1px solid var(--line);font-size:10.5px;color:var(--muted)}
 .hint{font-size:10px;color:var(--muted-2);line-height:1.5}
 .tinput{width:100%;padding:9px 11px;border-radius:10px;border:1px solid var(--line);background:#0e0e12;font-size:12.5px;font-weight:650;outline:none;transition:border-color .25s}
@@ -275,7 +255,6 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.22)}
 .swatch:active{transform:scale(.88)}
 .swatch.on{border-color:#fff;transform:scale(1.08)}
 
-/* ---------------- sheets ---------------- */
 .scrim{position:absolute;inset:0;z-index:100;background:rgba(4,4,6,.66);backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity .35s}
 .scrim.on{opacity:1;pointer-events:auto}
 .sheet{position:absolute;z-index:110;left:0;right:0;bottom:0;max-height:88%;display:flex;flex-direction:column;
@@ -300,7 +279,6 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.22)}
 .toggle.on{background:var(--lime)}
 .toggle.on::after{transform:translateX(18px)}
 
-/* render progress */
 .ring{position:relative;width:92px;height:92px;margin:2px auto 12px}
 .ring svg{transform:rotate(-90deg)}
 .ring .bgc{stroke:rgba(255,255,255,.1)}
@@ -325,7 +303,6 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.22)}
 .linkbox{display:flex;align-items:center;gap:8px;padding:11px 12px;border-radius:12px;background:#0d0d10;border:1px solid var(--line);font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--muted);overflow:hidden}
 .linkbox span{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-/* console */
 .clog{font-family:'JetBrains Mono',monospace;font-size:10px;line-height:1.55}
 .clog-row{display:grid;grid-template-columns:46px 30px 1fr auto;gap:7px;align-items:center;padding:7px 4px;border-bottom:1px solid rgba(255,255,255,.05);animation:pIn .35s var(--ease) backwards}
 .clog-row .m{font-weight:700}
@@ -336,11 +313,9 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.22)}
 .clog-row .t{color:var(--muted-2)}
 .cdot{width:6px;height:6px;border-radius:50%;background:var(--accent-2);animation:blink .8s infinite}
 
-/* toast */
 .toast{position:absolute;z-index:200;left:50%;bottom:calc(var(--panel-h) + var(--tl-h) + 70px);padding:10px 15px;border-radius:12px;background:rgba(20,20,26,.94);border:1px solid var(--line-2);backdrop-filter:blur(14px);font-size:11.5px;font-weight:650;white-space:nowrap;box-shadow:0 14px 34px rgba(0,0,0,.55);opacity:0;transform:translate(-50%,14px) scale(.95);pointer-events:none;transition:opacity .3s,transform .4s var(--ease)}
 .toast.on{opacity:1;transform:translate(-50%,0) scale(1)}
 
-/* boot */
 .boot{position:absolute;inset:0;z-index:300;display:grid;place-items:center;background:#08080a;transition:opacity .5s ease,visibility .5s}
 .boot.off{opacity:0;visibility:hidden}
 .boot .bwrap{display:flex;flex-direction:column;align-items:center;gap:16px}
@@ -476,7 +451,7 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.22)}
 
       <div class="sheet" id="consoleSheet">
         <div class="grab"><i></i></div>
-        <div class="shead"><div><h3>Backend console</h3><small class="mono">CutFlow REST API Service</small></div>
+        <div class="shead"><div><h3>Backend console</h3><small class="mono">sqlite3 api · region eu-west-1</small></div>
           <div style="display:flex;gap:2px">
             <button class="rb" id="clearLog" aria-label="Clear log"><svg class="icon" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5h6v2M6 7l1 13h10l1-13"/></svg></button>
             <button class="rb" data-close><svg class="icon" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
@@ -489,749 +464,6 @@ input[type=range]:active::-webkit-slider-thumb{transform:scale(1.22)}
   </div>
 </div>
 
-<script>
-/* =================================================================== *
- *  0 · helpers
- * =================================================================== */
-const $  = (s,r=document)=>r.querySelector(s);
-const $$ = (s,r=document)=>[...r.querySelectorAll(s)];
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const p2=n=>String(Math.floor(n)).padStart(2,'0');
-const sleep=ms=>new Promise(r=>setTimeout(r,ms));
-const seeded=i=>{const x=Math.sin(i*12.9898)*43758.5453;return x-Math.floor(x)};
-const fmtTC=t=>`${p2(t/60)}:${p2(t%60)}:${p2((t%1)*30)}`;
-const fmtS=t=>`${t.toFixed(1)}s`;
-const reduceMotion=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-/* =================================================================== *
- *  1 · REAL BACKEND CLIENT WITH API CALLS & LOGGING
- * =================================================================== */
-const Backend = (() => {
-  let log = [], listeners = [], reqId = 0;
-
-  const emit = e => {
-    const i = log.findIndex(x => x.id === e.id);
-    if (i >= 0) log[i] = { ...log[i], ...e }; else log.unshift(e);
-    if (log.length > 60) log.pop();
-    listeners.forEach(f => f(log));
-  };
-
-  async function req(method, path, body = null) {
-    const id = 'r' + (++reqId), t0 = performance.now();
-    emit({ id, method, path, status: 'pending', ms: null, at: Date.now() });
-
-    try {
-      const opts = {
-        method,
-        headers: { 'Content-Type': 'application/json' }
-      };
-      if (body) opts.body = JSON.stringify(body);
-
-      const res = await fetch(path, opts);
-      const data = await res.json();
-      emit({ id, method, path, status: res.status, ms: Math.round(performance.now() - t0), at: Date.now() });
-      if (!res.ok) throw new Error(data.error || 'Request failed');
-      return data;
-    } catch (err) {
-      emit({ id, method, path, status: 500, ms: Math.round(performance.now() - t0), at: Date.now(), err: String(err) });
-      throw err;
-    }
-  }
-
-  return {
-    onLog(f) { listeners.push(f); f(log); },
-    get log() { return log; },
-    getProject(id) { return req('GET', `/v1/projects/${id}`); },
-    saveProject(id, data) { return req('PUT', `/v1/projects/${id}`, data); },
-    presets() { return req('GET', '/v1/presets'); },
-    createRender(payload) { return req('POST', '/v1/renders', payload); },
-    getRender(id) { return req('GET', `/v1/renders/${id}`); },
-    cancelRender(id) { return req('DELETE', `/v1/renders/${id}`); }
-  };
-})();
-
-/* Audio Synthesizer (Web Audio API) for Real Soundtrack Playback */
-class AudioSynth {
-  constructor() {
-    this.ctx = null;
-    this.osc = null;
-    this.gain = null;
-  }
-  init() {
-    if (!this.ctx) {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (AudioCtx) this.ctx = new AudioCtx();
-    }
-  }
-  start(track, volume, muted) {
-    if (muted || volume <= 0) { this.stop(); return; }
-    this.init();
-    if (!this.ctx) return;
-    if (this.ctx.state === 'suspended') this.ctx.resume();
-    if (this.osc) this.stop();
-
-    this.osc = this.ctx.createOscillator();
-    this.gain = this.ctx.createGain();
-
-    const freqs = { alpine: 220, pulse: 330, tape: 110 };
-    this.osc.frequency.setValueAtTime(freqs[track] || 220, this.ctx.currentTime);
-    this.osc.type = track === 'pulse' ? 'square' : track === 'tape' ? 'sawtooth' : 'sine';
-
-    this.gain.gain.setValueAtTime(volume * 0.1, this.ctx.currentTime);
-    this.osc.connect(this.gain);
-    this.gain.connect(this.ctx.destination);
-    this.osc.start();
-  }
-  stop() {
-    if (this.osc) {
-      try { this.osc.stop(); this.osc.disconnect(); } catch (e) {}
-      this.osc = null;
-    }
-  }
-  setVolume(volume, muted) {
-    if (this.gain && this.ctx) {
-      this.gain.gain.setValueAtTime(muted ? 0 : volume * 0.1, this.ctx.currentTime);
-    }
-  }
-}
-const audioSynth = new AudioSynth();
-
-/* =================================================================== *
- *  2 · state
- * =================================================================== */
-const RATIOS=[
-  {id:'portrait', css:'9 / 16', chip:'9:16 · Reels', w:'min(64%,250px)'},
-  {id:'square',   css:'1 / 1',  chip:'1:1 · Feed',   w:'min(84%,330px)'},
-  {id:'landscape',css:'16 / 9', chip:'16:9 · YouTube',w:'90%'},
-  {id:'classic',  css:'4 / 3',  chip:'4:3 · Classic', w:'84%'}
-];
-const state={
-  project:null, presets:null, rev:0,
-  time:0, playing:false, tool:'trim', selected:0, pps:52,
-  undo:[], redo:[], exportOpts:{res:'1080p',fps:30,bitrate:14,clean:true}, job:null
-};
-
-/* DOM refs */
-const phone=$('#phone'), canvas=$('#canvas'), vtext=$('#vtext'), f1=$('#f1'), f2=$('#f2'), wsBg=$('#wsBg');
-const tlScroll=$('#tlScroll'), tlInner=$('#tlInner'), clipsEl=$('#clips'), rulerEl=$('#ruler'), audStrip=$('#audStrip');
-const panel=$('#panel'), tabsEl=$('#tabs'), tabind=$('#tabind');
-const tcNow=$('#tcNow'), tcTotal=$('#tcTotal'), saveState=$('#saveState'), saveTxt=$('#saveTxt');
-const toastEl=$('#toast'), scrim=$('#scrim');
-
-/* =================================================================== *
- *  3 · icons + tool registry
- * =================================================================== */
-const ICO={
-  trim:'<path d="M6 3v12a3 3 0 0 0 3 3h9M6 21v-6M18 3v6"/>',
-  text:'<path d="M4 6V4h16v2M12 4v16M9 20h6"/>',
-  filter:'<circle cx="9" cy="9" r="5"/><circle cx="15" cy="15" r="5"/>',
-  audio:'<path d="M9 18V6l10-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="16.5" cy="16" r="2.5"/>',
-  speed:'<path d="M12 20a8 8 0 1 0-8-8"/><path d="M12 12l4-3"/>'
-};
-const TOOLS=[
-  {id:'trim',   label:'Trim',   icon:ICO.trim},
-  {id:'text',   label:'Text',   icon:ICO.text},
-  {id:'filter', label:'Grade',  icon:ICO.filter},
-  {id:'audio',  label:'Audio',  icon:ICO.audio},
-  {id:'speed',  label:'Speed',  icon:ICO.speed}
-];
-function buildTabs(){
-  TOOLS.forEach(t=>{
-    const b=document.createElement('button');
-    b.className='tab'+(t.id===state.tool?' on':''); b.dataset.tool=t.id;
-    b.innerHTML=`<svg class="icon" viewBox="0 0 24 24">${t.icon}</svg><span>${t.label}</span>`;
-    tabsEl.appendChild(b);
-  });
-}
-function moveIndicator(){
-  const el=$(`.tab[data-tool="${state.tool}"]`,tabsEl); if(!el)return;
-  tabind.style.width=el.offsetWidth+'px';
-  tabind.style.transform=`translateX(${el.offsetLeft}px)`;
-}
-
-/* =================================================================== *
- *  4 · project utils
- * =================================================================== */
-const total=()=>state.project.clips.reduce((s,c)=>s+c.dur,0);
-function clipStart(i){let s=0;for(let k=0;k<i;k++)s+=state.project.clips[k].dur;return s}
-function clipAt(t){
-  const cs=state.project.clips; let s=0;
-  for(let i=0;i<cs.length;i++){ if(t < s+cs[i].dur || i===cs.length-1) return {i,local:clamp(t-s,0,cs[i].dur),start:s}; s+=cs[i].dur }
-  return {i:0,local:0,start:0};
-}
-function snapshot(){
-  state.undo.push(JSON.stringify(state.project));
-  if(state.undo.length>40) state.undo.shift();
-  state.redo.length=0;
-}
-function restore(str){ state.project=JSON.parse(str); state.selected=clamp(state.selected,0,state.project.clips.length-1); applyProject(); renderTimeline(); renderPanel(); }
-
-/* =================================================================== *
- *  5 · timeline
- * =================================================================== */
-function renderTimeline(){
-  const T=total(), W=T*state.pps+120;
-  tlInner.style.width=W+'px';
-  /* ruler */
-  let rh='';
-  for(let s=0;s<=Math.ceil(T);s+=1){
-    if(s%2===0) rh+=`<span style="left:${s*state.pps}px">${p2(s/60)}:${p2(s%60)}</span>`;
-  }
-  rulerEl.innerHTML=rh; rulerEl.style.backgroundSize=`${state.pps}px 7px`;
-  /* clips */
-  clipsEl.innerHTML=state.project.clips.map((c,i)=>`
-    <button class="clip${i===state.selected?' on':''}" data-i="${i}" style="--i:${i};width:${Math.max(26,c.dur*state.pps-4)}px;background-image:url('${c.img}')">
-      <span class="fx"></span><span class="cd mono">${c.dur.toFixed(1)}s</span><span class="cn">${c.name}</span>
-    </button>`).join('');
-  /* audio strip */
-  const bars=Math.round(T*7);
-  let ah='';
-  for(let i=0;i<bars;i++){
-    const h=18+seeded(i)*76;
-    ah+=`<i style="height:${h}%;--b:${i%9}"></i>`;
-  }
-  audStrip.innerHTML=ah;
-  tcTotal.textContent=fmtTC(T);
-  updatePlayhead();
-}
-function updatePlayhead(){
-  const vw=tlScroll.clientWidth;
-  tlScroll.scrollLeft=state.time*state.pps - vw/2;
-}
-let suppress=false;
-tlScroll.addEventListener('scroll',()=>{
-  if(suppress)return;
-  const vw=tlScroll.clientWidth;
-  state.time=clamp((tlScroll.scrollLeft+vw/2)/state.pps,0,total());
-  syncPreview();
-},{passive:true});
-function seek(t,{scroll=true}={}){
-  state.time=clamp(t,0,total());
-  if(scroll){
-    suppress=true;
-    updatePlayhead();
-    clearTimeout(seek._t); seek._t=setTimeout(()=>suppress=false,140);
-  }
-  syncPreview();
-}
-clipsEl.addEventListener('click',e=>{
-  const b=e.target.closest('.clip'); if(!b)return;
-  const i=+b.dataset.i; state.selected=i;
-  $$('.clip',clipsEl).forEach(c=>c.classList.toggle('on',+c.dataset.i===i));
-  seek(clipStart(i)+0.02);
-  if(state.tool==='trim'||state.tool==='filter') renderPanel();
-});
-
-/* =================================================================== *
- *  6 · preview
- * =================================================================== */
-let front=0;
-function applyProject(){
-  const p=state.project;
-  const r=RATIOS.find(x=>x.id===p.ratio)||RATIOS[0];
-  canvas.style.aspectRatio=r.css; canvas.style.width=r.w;
-  $('#ratioChip').textContent=r.chip;
-  const fil=(state.presets.filters.find(f=>f.id===p.filter)||{css:'none'}).css;
-  $('.frames',canvas).style.filter=fil;
-  /* text */
-  vtext.innerHTML=p.text.content.split('\n').map(l=>`<span style="display:block">${l||'&nbsp;'}</span>`).join('');
-  vtext.style.fontWeight=p.text.weight; vtext.style.color=p.text.color;
-  vtext.style.left=p.text.x+'%'; vtext.style.top=p.text.y+'%';
-  vtext.style.textTransform = p.text.upper?'uppercase':'none';
-  $('#transport').classList.toggle('playing',state.playing);
-  phone.classList.toggle('playing',state.playing);
-}
-function syncPreview(){
-  const p=state.project, T=total();
-  tcNow.textContent=fmtTC(state.time);
-  const {i,local,start}=clipAt(state.time);
-  const c=p.clips[i];
-  if(!c) return;
-  if(f1.dataset.i!=i && f2.dataset.i!=i){
-    const back=1-front, imgs=[f1,f2];
-    imgs[back].src=c.img; imgs[back].dataset.i=i;
-    imgs[back].classList.add('show'); imgs[front].classList.remove('show');
-    front=back;
-    if(state.selected!==i){ state.selected=i; $$('.clip',clipsEl).forEach(el=>el.classList.toggle('on',+el.dataset.i===i)); }
-    if(p.text.anim==='pop' && !reduceMotion){ vtext.classList.remove('pop'); void vtext.offsetWidth; vtext.classList.add('pop'); }
-  }
-  const active=[f1,f2][front];
-  if(!reduceMotion){
-    const lp=local/c.dur;
-    active.style.transform=`scale(${(1.03+lp*0.09).toFixed(3)}) translate3d(${((lp-.5)*-1.4).toFixed(2)}%,${((lp-.5)*-1).toFixed(2)}%,0)`;
-  }
-  wsBg.style.backgroundImage=`url('${c.img}')`;
-  const off = -state.time/T*14;
-  wsBg.style.transform=`scale(1.14) translate3d(${off}px,0,0)`;
-}
-
-/* =================================================================== *
- *  7 · playback
- * =================================================================== */
-let last=0;
-function loop(ts){
-  if(state.playing){
-    const dt=Math.min(.1,(ts-last)/1000);
-    let t=state.time+dt*state.project.speed;
-    if(t>=total()){ t=0; }
-    state.time=t; updatePlayhead(); syncPreview();
-  }
-  last=ts; requestAnimationFrame(loop);
-}
-requestAnimationFrame(loop);
-function setPlaying(v){
-  state.playing=v;
-  $('#playIcon').innerHTML = v ? '<path d="M8 5h3v14H8zM13 5h3v14h-3z"/>' : '<path d="M7 4.5v15l13-7.5z"/>';
-  $('#transport').classList.toggle('playing',v);
-  phone.classList.toggle('playing',v);
-
-  if (v) {
-    audioSynth.start(state.project.track, state.project.volume, state.project.muted);
-  } else {
-    audioSynth.stop();
-  }
-}
-$('#playBtn').addEventListener('click',()=>setPlaying(!state.playing));
-$('#prevBtn').addEventListener('click',()=>{const i=clipAt(state.time).i;seek(clipStart(Math.max(0,i-1))+.02)});
-$('#nextBtn').addEventListener('click',()=>{const i=clipAt(state.time).i;seek(clipStart(Math.min(state.project.clips.length-1,i+1))+.02)});
-document.addEventListener('keydown',e=>{
-  if(e.target.tagName==='INPUT')return;
-  if(e.code==='Space'){e.preventDefault();setPlaying(!state.playing)}
-  if(e.key==='ArrowLeft')seek(state.time-.2);
-  if(e.key==='ArrowRight')seek(state.time+.2);
-  if(e.key.toLowerCase()==='e')openExport();
-});
-
-/* =================================================================== *
- *  8 · canvas interactions (drag text, ratios, guides)
- * =================================================================== */
-let drag=null;
-vtext.addEventListener('pointerdown',e=>{
-  e.preventDefault(); vtext.setPointerCapture(e.pointerId);
-  vtext.classList.add('sel');
-  const r=canvas.getBoundingClientRect();
-  drag={r,dx:e.clientX-(r.left+r.width*state.project.text.x/100),dy:e.clientY-(r.top+r.height*state.project.text.y/100)};
-});
-vtext.addEventListener('pointermove',e=>{
-  if(!drag)return;
-  const x=clamp(((e.clientX-drag.dx-drag.r.left)/drag.r.width)*100,10,90);
-  const y=clamp(((e.clientY-drag.dy-drag.r.top)/drag.r.height)*100,8,92);
-  state.project.text.x=x; state.project.text.y=y;
-  vtext.style.left=x+'%'; vtext.style.top=y+'%';
-});
-['pointerup','pointercancel'].forEach(ev=>vtext.addEventListener(ev,()=>{
-  if(drag){ drag=null; vtext.classList.remove('sel'); scheduleSave(); }
-}));
-$('#guideBtn').addEventListener('click',e=>{
-  const on=canvas.classList.toggle('guides-on');
-  e.currentTarget.classList.toggle('on',on); toast(on?'Safe zones on':'Safe zones off');
-});
-$('#ratioBtn').addEventListener('click',()=>{
-  snapshot();
-  const i=RATIOS.findIndex(r=>r.id===state.project.ratio);
-  state.project.ratio=RATIOS[(i+1)%RATIOS.length].id;
-  applyProject(); scheduleSave(); toast(RATIOS[(i+1)%RATIOS.length].chip);
-});
-$('#fullBtn').addEventListener('click',()=>{
-  if(document.fullscreenElement) document.exitFullscreen?.();
-  else phone.requestFullscreen?.().catch(()=>toast('Fullscreen unavailable'));
-});
-
-/* =================================================================== *
- *  9 · panels
- * =================================================================== */
-function rng(pct){return `style="--p:${pct}%"`}
-function renderPanel(){
-  const p=state.project;
-  panel.style.animation='none'; void panel.offsetWidth; panel.style.animation='';
-  let html='';
-  if(state.tool==='trim'){
-    const c=p.clips[state.selected]||p.clips[0];
-    const maxStart=Math.max(.2,c.orig-.6);
-    html=`
-      <div class="plabel" style="--i:0">Clip ${state.selected+1} / ${p.clips.length}</div>
-      <div class="prow" style="--i:1">
-        <div class="clip" style="width:46px;height:52px;background-image:url('${c.img}');pointer-events:none"><span class="cd mono">${c.dur.toFixed(1)}s</span></div>
-        <div style="flex:1;min-width:0">
-          <div style="font-size:12.5px;font-weight:700;letter-spacing:-.01em">${c.name}</div>
-          <div class="hint" style="margin-top:3px">Source ${c.orig.toFixed(1)}s · in ${c.in.toFixed(1)}s · out ${(c.in+c.dur).toFixed(1)}s</div>
-        </div>
-      </div>
-      <div style="--i:2"><div class="psub"><span>In point</span><b class="mono" id="inVal">${c.in.toFixed(1)}s</b></div>
-        <input type="range" id="inR" min="0" max="${maxStart.toFixed(2)}" step="0.1" value="${c.in}" ${rng((c.in/maxStart)*100)}></div>
-      <div style="--i:3"><div class="psub"><span>Duration</span><b class="mono" id="durVal">${c.dur.toFixed(1)}s</b></div>
-        <input type="range" id="durR" min="0.6" max="${(c.orig-c.in).toFixed(2)}" step="0.1" value="${c.dur}" ${rng((c.dur/(c.orig-c.in))*100)}></div>
-      <div class="chips" style="--i:4;margin-top:4px">
-        <button class="chip accent" data-act="split">Split at playhead</button>
-        <button class="chip" data-act="dup">Duplicate</button>
-        <button class="chip" data-act="del">Delete</button>
-        <button class="chip ghost" data-act="undo">Undo</button>
-      </div>`;
-  }
-  if(state.tool==='text'){
-    const t=p.text;
-    html=`
-      <div class="plabel" style="--i:0">Title layer</div>
-      <input class="tinput" id="txtIn" style="--i:1" value="${t.content.replace(/"/g,'&quot;')}" placeholder="Type a title…">
-      <div class="psub" style="--i:2;margin-top:10px"><span>Weight</span><b>${t.weight}</b></div>
-      <div class="chips" style="--i:3">
-        ${[500,700,900].map(w=>`<button class="chip${t.weight===w?' on':''}" data-act="w" data-v="${w}">${w}</button>`).join('')}
-        <button class="chip${t.upper?' on':''}" data-act="upper">UPPERCASE</button>
-      </div>
-      <div class="psub" style="--i:4;margin-top:10px"><span>Colour</span><span class="hint">drag on preview to reposition</span></div>
-      <div class="sw" style="--i:5">
-        ${['#ffffff','#0b0b0e','#ff5a2b','#ffb03a','#c6f24e','#5fd7d2'].map(c=>`<button class="swatch${t.color===c?' on':''}" data-act="col" data-v="${c}" style="background:${c}"></button>`).join('')}
-      </div>
-      <div class="psub" style="--i:6;margin-top:10px"><span>Entrance</span></div>
-      <div class="chips" style="--i:7">
-        ${['pop','fade','none'].map(a=>`<button class="chip${t.anim===a?' on':''}" data-act="anim" data-v="${a}">${a}</button>`).join('')}
-      </div>`;
-  }
-  if(state.tool==='filter'){
-    const img=p.clips[0].img;
-    html=`<div class="plabel" style="--i:0">LUT pack · /v1/presets</div>
-      <div class="ftiles" style="--i:1">
-        ${state.presets.filters.map(f=>`
-          <button class="ftile${p.filter===f.id?' on':''}" data-act="filter" data-v="${f.id}">
-            <span class="im" style="background-image:url('${img}');filter:${f.css}"></span><span>${f.name}</span>
-          </button>`).join('')}
-      </div>
-      <div class="stat" style="--i:2;margin-top:8px">
-        <span class="dot"></span><span>Applied globally · rendering in real time on GPU</span>
-      </div>`;
-  }
-  if(state.tool==='audio'){
-    html=`<div class="plabel" style="--i:0">Soundtrack</div>
-      ${state.presets.audio.map(a=>`
-        <div class="acard${p.track===a.id?' on':''}" data-act="track" data-v="${a.id}" style="--i:1">
-          <div class="pl"><svg class="icon" viewBox="0 0 24 24" style="width:14px;height:14px">${ICO.audio}</svg></div>
-          <div class="nm"><b>${a.name}</b><small class="mono">${a.len} · ${a.bpm} BPM</small></div>
-          <div class="awave">${Array.from({length:11},(_,i)=>`<i style="height:${30+seeded(i+a.bpm)*65}%;--b:${i}"></i>`).join('')}</div>
-        </div>`).join('')}
-      <div style="--i:2;margin-top:6px"><div class="psub"><span>Volume</span><b class="mono" id="volVal">${Math.round(p.volume*100)}%</b></div>
-        <input type="range" id="volR" min="0" max="100" value="${p.volume*100}" ${rng(p.volume*100)}></div>
-      <div class="chips" style="--i:3">
-        <button class="chip${p.muted?'':' on'}" data-act="mute">${p.muted?'Muted':'Audible'}</button>
-        <button class="chip" data-act="duck">Auto-duck on dialogue</button>
-      </div>`;
-  }
-  if(state.tool==='speed'){
-    html=`<div class="plabel" style="--i:0">Retiming</div>
-      <div class="chips" style="--i:1">
-        ${[.5,.75,1,1.5,2].map(s=>`<button class="chip accent${p.speed===s?' on':''}" data-act="speed" data-v="${s}">${s}×</button>`).join('')}
-      </div>
-      <div style="--i:2;margin-top:14px"><div class="psub"><span>Playback rate</span><b class="mono">${p.speed.toFixed(2)}×</b></div>
-        <div class="pbar" style="background:rgba(255,255,255,.08)"><i style="width:${(p.speed/2)*100}%;background:linear-gradient(90deg,var(--cyan),var(--lime))"></i></div></div>
-      <div class="stat" style="--i:3;margin-top:12px">
-        <svg class="icon" viewBox="0 0 24 24" style="width:15px;height:15px;color:var(--cyan)">${ICO.speed}</svg>
-        <span>Optical-flow interpolation keeps motion smooth above 1.5×.</span>
-      </div>
-      <div class="chips" style="--i:4;margin-top:10px">
-        <button class="chip" data-act="ramp">Smooth ramp to 2×</button>
-        <button class="chip" data-act="freeze">Freeze frame here</button>
-      </div>`;
-  }
-  panel.innerHTML=html;
-}
-tabsEl.addEventListener('click',e=>{
-  const t=e.target.closest('.tab'); if(!t)return;
-  state.tool=t.dataset.tool;
-  $$('.tab',tabsEl).forEach(x=>x.classList.toggle('on',x===t));
-  moveIndicator(); renderPanel();
-});
-
-/* panel delegation */
-panel.addEventListener('input',e=>{
-  const el=e.target, p=state.project;
-  if(el.id==='inR'){
-    const c=p.clips[state.selected];
-    c.in=+el.value; c.dur=Math.min(c.dur,c.orig-c.in); if(c.dur<.6)c.dur=.6;
-    el.style.setProperty('--p',(c.in/Math.max(.2,c.orig-.6))*100+'%');
-    $('#inVal').textContent=c.in.toFixed(1)+'s'; $('#durVal').textContent=c.dur.toFixed(1)+'s';
-    renderTimeline(); syncPreview(); scheduleSave();
-  }
-  if(el.id==='durR'){
-    const c=p.clips[state.selected];
-    c.dur=clamp(+el.value,.6,c.orig-c.in);
-    el.style.setProperty('--p',(c.dur/(c.orig-c.in))*100+'%');
-    $('#durVal').textContent=c.dur.toFixed(1)+'s';
-    renderTimeline(); syncPreview(); scheduleSave();
-  }
-  if(el.id==='volR'){
-    p.volume=+el.value/100;
-    el.style.setProperty('--p',el.value+'%');
-    $('#volVal').textContent=el.value+'%';
-    audioSynth.setVolume(p.volume, p.muted);
-    scheduleSave();
-  }
-  if(el.id==='txtIn'){
-    p.text.content=el.value||' ';
-    applyProject(); scheduleSave();
-  }
-});
-panel.addEventListener('click',e=>{
-  const b=e.target.closest('[data-act]'); if(!b)return;
-  const p=state.project, act=b.dataset.act, v=b.dataset.v;
-  if(act==='split'){
-    const {i,local}=clipAt(state.time), c=p.clips[i], frac=local/c.dur;
-    if(frac<.12||frac>.88){toast('Move the playhead into the middle of the clip');return}
-    snapshot();
-    const a={...c,id:c.id+'a',dur:+(c.dur*frac).toFixed(2)};
-    const bb={...c,id:c.id+'b',in:+(c.in+c.dur*frac).toFixed(2),dur:+(c.dur*(1-frac)).toFixed(2)};
-    p.clips.splice(i,1,a,bb); state.selected=i;
-    renderTimeline(); renderPanel(); toast('Clip split at '+fmtS(state.time)); scheduleSave();
-  }
-  if(act==='dup'){ snapshot(); p.clips.splice(state.selected+1,0,{...p.clips[state.selected],id:'c'+Date.now()}); renderTimeline(); renderPanel(); toast('Clip duplicated'); scheduleSave(); }
-  if(act==='del'){
-    if(p.clips.length<=1){toast('A timeline needs at least one clip');return}
-    snapshot(); p.clips.splice(state.selected,1); state.selected=clamp(state.selected,0,p.clips.length-1);
-    seek(Math.min(state.time,total())); renderTimeline(); renderPanel(); toast('Clip removed'); scheduleSave();
-  }
-  if(act==='undo'){ if(!state.undo.length){toast('Nothing to undo');return} state.redo.push(JSON.stringify(state.project)); restore(state.undo.pop()); toast('Undo'); scheduleSave(); }
-  if(act==='w'){ snapshot(); p.text.weight=+v; applyProject(); renderPanel(); scheduleSave(); }
-  if(act==='upper'){ snapshot(); p.text.upper=!p.text.upper; applyProject(); renderPanel(); scheduleSave(); }
-  if(act==='col'){ snapshot(); p.text.color=v; applyProject(); renderPanel(); scheduleSave(); }
-  if(act==='anim'){ snapshot(); p.text.anim=v; applyProject(); renderPanel(); scheduleSave(); }
-  if(act==='filter'){ snapshot(); p.filter=v; applyProject(); renderPanel();
-    const f=state.presets.filters.find(x=>x.id===v); toast(f.name+' applied'); scheduleSave(); }
-  if(act==='track'){ snapshot(); p.track=p.track===v?null:v; applyProject(); renderPanel();
-    if (state.playing) audioSynth.start(p.track, p.volume, p.muted);
-    toast(p.track?state.presets.audio.find(a=>a.id===p.track).name+' linked':'Track removed'); scheduleSave(); }
-  if(act==='mute'){ snapshot(); p.muted=!p.muted; applyProject(); renderPanel();
-    audioSynth.setVolume(p.volume, p.muted); scheduleSave(); }
-  if(act==='duck'){ toast('Dialogue ducking enabled'); scheduleSave(); }
-  if(act==='speed'){ snapshot(); p.speed=+v; applyProject(); renderPanel(); toast('Speed '+v+'×'); scheduleSave(); }
-  if(act==='ramp'){ snapshot(); p.speed=2; applyProject(); renderPanel(); toast('Ramped to 2× over 12 frames'); scheduleSave(); }
-  if(act==='freeze'){ toast('Freeze frame added at '+fmtS(state.time)); }
-});
-
-/* =================================================================== *
- *  10 · saving (optimistic, debounced)
- * =================================================================== */
-let saveT=null;
-function scheduleSave(){
-  clearTimeout(saveT);
-  saveState.classList.add('saving'); saveTxt.textContent='Saving…';
-  saveT=setTimeout(async()=>{
-    try{
-      const r=await Backend.saveProject('cf_8241',state.project);
-      state.rev=r.rev;
-      saveState.classList.remove('saving');
-      saveTxt.textContent=`Saved · rev ${r.rev} · ${(r.bytes/1024).toFixed(1)} KB`;
-      setTimeout(()=>{ if(!saveState.classList.contains('saving')) saveTxt.textContent='All changes saved' },2600);
-    }catch(e){ saveState.classList.remove('saving'); saveTxt.textContent='Offline — changes queued' }
-  },850);
-}
-
-/* =================================================================== *
- *  11 · toast
- * =================================================================== */
-let toastT;
-function toast(msg){
-  toastEl.textContent=msg; toastEl.classList.add('on');
-  clearTimeout(toastT); toastT=setTimeout(()=>toastEl.classList.remove('on'),1900);
-}
-
-/* =================================================================== *
- *  12 · sheets
- * =================================================================== */
-function openSheet(el){ scrim.classList.add('on'); el.classList.add('open') }
-function closeSheets(){
-  scrim.classList.remove('on');
-  $$('.sheet').forEach(s=>s.classList.remove('open'));
-  if(state.job && state.job.poll){ clearInterval(state.job.poll); state.job=null }
-}
-scrim.addEventListener('click',closeSheets);
-$$('[data-close]').forEach(b=>b.addEventListener('click',closeSheets));
-
-/* ---------- export ---------- */
-const STAGES=['Preparing media','Rendering effects','Encoding H.264','Packaging'];
-function estSize(){
-  const o=state.exportOpts, mult=o.res==='2160p'?4.1:o.res==='1440p'?2.2:1;
-  return (total()*o.bitrate/8*mult).toFixed(1);
-}
-function exportForm(){
-  const o=state.exportOpts;
-  $('#expTitle').textContent='Export cut';
-  $('#expSub').textContent=`POST /v1/renders · ${state.project.clips.length} clips · ${fmtS(total())}`;
-  $('#expBody').innerHTML=`
-    <div class="opt"><div class="plabel">Resolution</div>
-      <div class="chips">${['720p','1080p','1440p','2160p'].map(r=>`<button class="chip accent${o.res===r?' on':''}" data-o="res" data-v="${r}">${r}</button>`).join('')}</div></div>
-    <div class="opt"><div class="plabel">Frame rate</div>
-      <div class="chips">${[24,30,60].map(f=>`<button class="chip accent${o.fps===f?' on':''}" data-o="fps" data-v="${f}">${f} fps</button>`).join('')}</div></div>
-    <div class="opt"><div class="plabel">Codec</div>
-      <div class="chips">${state.presets.codecs.map(c=>`<button class="chip${(o.codec||'h264')===c.id?' on':''}" data-o="codec" data-v="${c.id}">${c.name}</button>`).join('')}</div></div>
-    <div class="opt"><div class="psub"><span>Bitrate</span><b class="mono" id="brVal">${o.bitrate} Mbps</b></div>
-      <input type="range" id="brR" min="4" max="45" value="${o.bitrate}" style="--p:${(o.bitrate/45)*100}%">
-      <div class="psub" style="margin-top:8px"><span>Estimated size</span><b class="mono" id="sizeVal">${estSize()} MB</b></div></div>
-    <div class="opt"><div class="acard${o.clean?' on':''}" data-o="clean" style="cursor:pointer">
-      <div class="nm"><b>Remove watermark</b><small>Available on Studio plan</small></div>
-      <div class="toggle${o.clean?' on':''}"></div></div></div>
-    <button class="bigbtn" id="startRender">Start render · ${estSize()} MB</button>`;
-}
-function exportProgress(){
-  $('#expTitle').textContent='Rendering';
-  $('#expSub').textContent='background job · poll /v1/renders';
-  $('#expBody').innerHTML=`
-    <div class="ring">
-      <svg width="92" height="92"><defs><linearGradient id="gr" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#ff5a2b"/><stop offset="1" stop-color="#ffb03a"/></linearGradient></defs>
-        <circle class="bgc" cx="46" cy="46" r="39" fill="none" stroke-width="7"/>
-        <circle class="fgc" id="ringFg" cx="46" cy="46" r="39" fill="none" stroke-width="7" stroke-dasharray="245" stroke-dashoffset="245"/>
-      </svg><div class="val mono" id="ringVal">0%</div></div>
-    <div class="pbar"><i id="pbar"></i></div>
-    <div class="stages" id="stages">${STAGES.map((s,i)=>`<div class="stage-i" data-s="${i}"><span class="bx"><svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></span><span>${s}</span></div>`).join('')}</div>
-    <button class="bigbtn ghostbtn" id="cancelRender">Cancel render</button>
-    <div class="rlog" id="rlog"></div>`;
-}
-function exportDone(job){
-  $('#expTitle').textContent='Render complete';
-  $('#expSub').textContent=`job ${job.id} · ${job.size}`;
-  $('#expBody').innerHTML=`
-    <div style="display:grid;place-items:center;padding:6px 0 14px">
-      <div style="width:64px;height:64px;border-radius:50%;background:var(--lime);display:grid;place-items:center;box-shadow:0 0 0 0 rgba(198,242,78,.5);animation:handle 1.8s infinite">
-        <svg class="icon" viewBox="0 0 24 24" style="width:28px;height:28px;stroke:#12120a;stroke-width:3"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
-      </div>
-      <div style="margin-top:11px;font-size:14px;font-weight:800;letter-spacing:-.02em">${state.exportOpts.res} · ${state.exportOpts.fps} fps · ${state.exportOpts.codec||'h264'}</div>
-      <div class="hint" style="margin-top:4px">Signed URL expires in 24 h</div>
-    </div>
-    <div class="linkbox"><span id="jobUrl">${job.url}</span><button class="chip" id="copyLink" style="padding:5px 9px">Copy</button></div>
-    <div class="chips" style="margin:12px 0 14px">
-      <button class="chip on" data-act2="photos">Save to Photos</button>
-      <button class="chip" data-act2="reel">Post to Reels</button>
-      <button class="chip" data-act2="link">Share link</button>
-    </div>
-    <button class="bigbtn" data-act2="done">Back to timeline</button>`;
-}
-$('#expBody').addEventListener('click',e=>{
-  const o=e.target.closest('[data-o]');
-  if(o){
-    const k=o.dataset.o, v=o.dataset.v;
-    state.exportOpts[k] = k==='clean' ? !state.exportOpts.clean : (k==='fps'?+v:v);
-    exportForm(); return;
-  }
-  if(e.target.id==='startRender'){ startRender(); return }
-  if(e.target.id==='cancelRender'){ cancelRender(); return }
-  if(e.target.id==='copyLink'){
-    const txt=$('#jobUrl')?.textContent||'';
-    navigator.clipboard?.writeText(txt).then(()=>toast('Link copied')).catch(()=>toast('Copy blocked by browser'));
-    return;
-  }
-  const a=e.target.closest('[data-act2]');
-  if(a){
-    const k=a.dataset.act2;
-    if(k==='done'){ closeSheets(); return }
-    toast(k==='photos'?'Saved to Photos':k==='reel'?'Queued for Reels':'Share sheet opened');
-  }
-});
-$('#expBody').addEventListener('input',e=>{
-  if(e.target.id==='brR'){
-    state.exportOpts.bitrate=+e.target.value;
-    e.target.style.setProperty('--p',((e.target.value-4)/41)*100+'%');
-    $('#brVal').textContent=e.target.value+' Mbps';
-    $('#sizeVal').textContent=estSize()+' MB';
-    const b=$('#startRender'); if(b) b.textContent=`Start render · ${estSize()} MB`;
-  }
-});
-function openExport(){ exportForm(); openSheet($('#exportSheet')) }
-$('#exportBtn').addEventListener('click',openExport);
-
-async function startRender(){
-  const payload={projectId:'cf_8241',clips:state.project.clips,text:state.project.text,filter:state.project.filter,
-    ratio:state.project.ratio,speed:state.project.speed,...state.exportOpts};
-  exportProgress();
-  const rlog=$('#rlog');
-  const addLog=(html)=>{ const d=document.createElement('div'); d.innerHTML=html; rlog.prepend(d); while(rlog.children.length>6) rlog.lastChild.remove() };
-  try{
-    const {id}=await Backend.createRender(payload);
-    addLog(`<b>POST</b> /v1/renders → <em>201</em> ${id}`);
-    state.job={id,poll:null};
-    const ring=$('#ringFg'), val=$('#ringVal'), bar=$('#pbar'), stages=$('#stages');
-    let lastStage=-1;
-    state.job.poll=setInterval(async()=>{
-      try{
-        const j=await Backend.getRender(id);
-        if(!document.body.contains(val)) return;
-        const pct=Math.round(j.progress);
-        ring.style.strokeDashoffset=245-(245*pct/100);
-        val.textContent=pct+'%'; bar.style.width=pct+'%';
-        $$('.stage-i',stages).forEach((el,i)=>{
-          el.classList.toggle('act',i===j.stage);
-          el.classList.toggle('done',i<j.stage || j.status==='done');
-        });
-        if(j.stage!==lastStage){ addLog(`<b>POLL</b> /v1/renders/${id.slice(0,8)}… → <em>200</em> ${pct}% · ${STAGES[j.stage]}`); lastStage=j.stage }
-        if(j.status==='done'){
-          clearInterval(state.job.poll); state.job=null;
-          await sleep(420); exportDone(j);
-        }
-      }catch(err){}
-    },300);
-  }catch(e){ toast('Render service unreachable'); exportForm() }
-}
-async function cancelRender(){
-  if(state.job){ clearInterval(state.job.poll); await Backend.cancelRender(state.job.id); state.job=null }
-  toast('Render cancelled'); exportForm();
-}
-
-/* ---------- backend console ---------- */
-const clog=$('#clog');
-function paintLog(log){
-  clog.innerHTML=log.map((e,i)=>{
-    const t=new Date(e.at||Date.now());
-    const time=p2(t.getHours())+':'+p2(t.getMinutes())+':'+(e.status==='pending'?'··':p2(t.getSeconds()));
-    return `<div class="clog-row" style="animation-delay:${Math.min(i*18,220)}ms">
-      <span class="t mono">${time}</span>
-      <span class="m ${e.method}">${e.method}</span>
-      <span class="p">${e.path}</span>
-      <span class="s ${e.status==='pending'?'pend':''} mono">${e.status==='pending'?'<span class="cdot"></span>':e.status+' · '+(e.ms!==null?e.ms+'ms':'--')}</span>
-    </div>`;
-  }).join('');
-}
-Backend.onLog(paintLog);
-$('#consoleBtn').addEventListener('click',()=>openSheet($('#consoleSheet')));
-$('#clearLog').addEventListener('click',()=>{ clog.innerHTML='<div class="hint" style="padding:8px 2px">Log cleared — new requests will appear here.</div>' });
-
-/* =================================================================== *
- *  13 · clock + boot
- * =================================================================== */
-function tickClock(){
-  const d=new Date();
-  $('#clock').textContent=((d.getHours()%12)||12)+':'+p2(d.getMinutes());
-}
-tickClock(); setInterval(tickClock,10000);
-
-(async function boot(){
-  buildTabs();
-  requestAnimationFrame(moveIndicator);
-  window.addEventListener('resize',()=>{moveIndicator();updatePlayhead()});
-
-  /* fetch project + presets from real backend */
-  const [proj,pres]=await Promise.all([
-    Backend.getProject('cf_8241'),
-    Backend.presets()
-  ]).catch(()=>[
-    {id:'cf_8241',title:'Offline draft',rev:1,clips:[],text:{content:'OFFLINE',x:50,y:66,weight:900,color:'#fff'},filter:'none',speed:1,ratio:'portrait',track:null,volume:.7,muted:false},
-    {filters:[{id:'none',name:'Original',css:'none'}],audio:[],codecs:[{id:'h264',name:'H.264'}]}
-  ]);
-  state.project=proj; state.presets=pres; state.rev=proj.rev||1;
-  $('#projTitle').textContent=proj.title;
-  saveTxt.textContent=`Loaded · rev ${state.rev}`;
-  $('#bootTxt').textContent='GET /v1/projects/cf_8241 → 200';
-
-  /* preload frames */
-  proj.clips.forEach(c=>{const im=new Image();im.src=c.img});
-  f1.src=proj.clips[0].img; f1.dataset.i=0;
-  applyProject(); renderTimeline(); renderPanel(); syncPreview();
-  await sleep(560);
-  phone.classList.add('ready');
-  $('#boot').classList.add('off');
-  setTimeout(()=>$('#boot').remove(),600);
-  setTimeout(()=>{ saveTxt.textContent='All changes saved' },1400);
-  setTimeout(moveIndicator,120);
-})();
-
-/* safety: never leave content hidden */
-setTimeout(()=>phone.classList.add('ready'),1800);
-</script>
+<script type="module" src="js/app.js"></script>
 </body>
 </html>
