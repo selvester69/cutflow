@@ -50,12 +50,48 @@ function allQuery(sql, params = []) {
 
 async function initDb() {
   await runQuery(`
+    CREATE TABLE IF NOT EXISTS users (
+      id TEXT PRIMARY KEY,
+      email TEXT UNIQUE NOT NULL,
+      password TEXT NOT NULL,
+      name TEXT NOT NULL,
+      created_at INTEGER NOT NULL
+    )
+  `);
+
+  await runQuery(`
     CREATE TABLE IF NOT EXISTS projects (
       id TEXT PRIMARY KEY,
+      user_id TEXT,
       title TEXT NOT NULL,
       rev INTEGER NOT NULL DEFAULT 1,
       updated_at INTEGER NOT NULL,
-      data TEXT NOT NULL
+      data TEXT NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
+
+  await runQuery(`
+    CREATE TABLE IF NOT EXISTS project_versions (
+      id TEXT PRIMARY KEY,
+      project_id TEXT NOT NULL,
+      rev INTEGER NOT NULL,
+      data TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      FOREIGN KEY (project_id) REFERENCES projects(id)
+    )
+  `);
+
+  await runQuery(`
+    CREATE TABLE IF NOT EXISTS media_assets (
+      id TEXT PRIMARY KEY,
+      user_id TEXT NOT NULL,
+      filename TEXT NOT NULL,
+      mimetype TEXT NOT NULL,
+      size INTEGER NOT NULL,
+      path TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `);
 
@@ -74,12 +110,22 @@ async function initDb() {
     )
   `);
 
+  // Seed default user if not existing
+  const defaultUser = await getQuery('SELECT id FROM users WHERE id = ?', ['usr_default']);
+  if (!defaultUser) {
+    await runQuery(
+      'INSERT INTO users (id, email, password, name, created_at) VALUES (?, ?, ?, ?, ?)',
+      ['usr_default', 'creator@cutflow.app', 'hashed_pass_123', 'Default Creator', Date.now()]
+    );
+  }
+
   // Seed default project if not existing
   const existingProject = await getQuery('SELECT id FROM projects WHERE id = ?', ['cf_8241']);
   if (!existingProject) {
     const IMG = (n) => `https://images.unsplash.com/photo-${n}?auto=format&fit=crop&w=640&q=70`;
     const defaultProjectData = {
       id: 'cf_8241',
+      userId: 'usr_default',
       title: 'Kyoto — Cut 02',
       rev: 11,
       updatedAt: Date.now(),
@@ -101,8 +147,8 @@ async function initDb() {
     };
 
     await runQuery(
-      'INSERT INTO projects (id, title, rev, updated_at, data) VALUES (?, ?, ?, ?, ?)',
-      ['cf_8241', defaultProjectData.title, defaultProjectData.rev, defaultProjectData.updatedAt, JSON.stringify(defaultProjectData)]
+      'INSERT INTO projects (id, user_id, title, rev, updated_at, data) VALUES (?, ?, ?, ?, ?, ?)',
+      ['cf_8241', 'usr_default', defaultProjectData.title, defaultProjectData.rev, defaultProjectData.updatedAt, JSON.stringify(defaultProjectData)]
     );
   }
 }

@@ -5,7 +5,7 @@ const app = require('../server');
 let server;
 const PORT = 3002;
 
-function request(method, path, data = null) {
+function request(method, path, data = null, headers = {}) {
   return new Promise((resolve, reject) => {
     const options = {
       hostname: 'localhost',
@@ -13,7 +13,8 @@ function request(method, path, data = null) {
       path,
       method,
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        ...headers
       }
     };
 
@@ -43,6 +44,24 @@ async function runTests() {
     try {
       console.log('Running API tests...');
 
+      // Test Health
+      const resHealth = await request('GET', '/health');
+      assert.strictEqual(resHealth.status, 200);
+      assert.strictEqual(resHealth.body.status, 'ok');
+      console.log('✔ GET /health passed');
+
+      // Test Auth Register & Login
+      const testEmail = `test_${Date.now()}@example.com`;
+      const resReg = await request('POST', '/v1/auth/register', { email: testEmail, password: 'password123', name: 'Tester' });
+      assert.strictEqual(resReg.status, 201);
+      assert.strictEqual(resReg.body.email, testEmail);
+      console.log('✔ POST /v1/auth/register passed');
+
+      const resLogin = await request('POST', '/v1/auth/login', { email: testEmail, password: 'password123' });
+      assert.strictEqual(resLogin.status, 200);
+      assert.ok(resLogin.body.token);
+      console.log('✔ POST /v1/auth/login passed');
+
       // Test 1: GET /v1/projects/cf_8241
       const resProj = await request('GET', '/v1/projects/cf_8241');
       assert.strictEqual(resProj.status, 200);
@@ -55,6 +74,23 @@ async function runTests() {
       assert.strictEqual(resSave.status, 200);
       assert.strictEqual(typeof resSave.body.rev, 'number');
       console.log('✔ PUT /v1/projects/cf_8241 passed');
+
+      // Test Project Versions
+      const resVers = await request('GET', '/v1/projects/cf_8241/versions');
+      assert.strictEqual(resVers.status, 200);
+      assert.strictEqual(Array.isArray(resVers.body), true);
+      console.log('✔ GET /v1/projects/cf_8241/versions passed');
+
+      // Test Media Assets Upload and List
+      const resMediaUp = await request('POST', '/v1/media', { filename: 'test_video.mp4', mimetype: 'video/mp4', size: 2048 });
+      assert.strictEqual(resMediaUp.status, 201);
+      assert.ok(resMediaUp.body.id);
+      console.log('✔ POST /v1/media passed');
+
+      const resMediaList = await request('GET', '/v1/media');
+      assert.strictEqual(resMediaList.status, 200);
+      assert.strictEqual(Array.isArray(resMediaList.body), true);
+      console.log('✔ GET /v1/media passed');
 
       // Test 3: GET 404 for invalid project
       const res404 = await request('GET', '/v1/projects/non_existent');

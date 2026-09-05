@@ -11,13 +11,18 @@ class ProjectService {
     return project;
   }
 
-  async saveProject(id, data) {
+  async saveProject(id, data, userId = 'usr_default') {
     if (!data) {
       const err = new Error('Invalid project payload');
       err.status = 400;
       throw err;
     }
-    return await projectRepo.save(id, data);
+    return await projectRepo.save(id, data, userId);
+  }
+
+  async getVersions(id) {
+    await this.getProject(id);
+    return await projectRepo.getVersions(id);
   }
 }
 
