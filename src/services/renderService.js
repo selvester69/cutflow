@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const renderRepo = require('../repositories/renderRepository');
+const renderWorker = require('../workers/renderWorker');
 
 const activeTimers = new Map();
 
@@ -18,6 +19,7 @@ class RenderService {
 
     await renderRepo.create(job);
 
+    // Asynchronously dispatch render worker job
     const timer = setInterval(async () => {
       try {
         const current = await renderRepo.findById(id);
@@ -27,45 +29,25 @@ class RenderService {
           return;
         }
 
-        let progress = current.progress + (current.progress < 6 ? 4.5 : current.progress < 78 ? 2.6 : 1.5) + Math.random() * 1.4;
+        let progress = current.progress + (current.progress < 10 ? 10.5 : current.progress < 80 ? 12.6 : 8.5);
         progress = Math.min(100, progress);
-        const stage = progress < 8 ? 0 : progress < 58 ? 1 : progress < 93 ? 2 : 3;
+        const stage = progress < 15 ? 0 : progress < 50 ? 1 : progress < 90 ? 2 : 3;
 
-        let updates = { progress, stage };
+        let updates = { progress, stage, status: progress >= 100 ? 'done' : 'processing' };
 
         if (progress >= 100) {
           clearInterval(timer);
           activeTimers.delete(id);
-
-          const res = payload.res || '1080p';
-          const fileDir = path.join(__dirname, '../../renders', id);
-          if (!fs.existsSync(fileDir)) {
-            fs.mkdirSync(fileDir, { recursive: true });
-          }
-          const filePath = path.join(fileDir, `${res}.mp4`);
-          const fileContent = `Rendered video output for job ${id}\nResolution: ${res}\nFPS: ${payload.fps || 30}\nCodec: ${payload.codec || 'h264'}\nTimestamp: ${new Date().toISOString()}`;
-          fs.writeFileSync(filePath, fileContent);
-
-          const renderUrl = `${baseUrl}/renders/${id}/${res}.mp4`;
-          const mult = res === '2160p' ? 2.9 : 1;
-          const renderSize = `${Math.round(28 + mult * 46)} MB`;
-
-          updates = {
-            progress: 100,
-            stage: 3,
-            status: 'done',
-            url: renderUrl,
-            size: renderSize
-          };
+          await renderWorker.processJob(id, payload, baseUrl);
+        } else {
+          await renderRepo.update(id, updates);
         }
-
-        await renderRepo.update(id, updates);
       } catch (err) {
         console.error('Error updating render job:', err);
         clearInterval(timer);
         activeTimers.delete(id);
       }
-    }, 240);
+    }, 150);
 
     activeTimers.set(id, timer);
 
